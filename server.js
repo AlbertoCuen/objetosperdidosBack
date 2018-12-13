@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Usuario, ObjetoPerdido } = require('./objetosPerdidos');
@@ -35,7 +37,10 @@ app.get('/all/objetoPerdido', (req, res) => {
 // CONSULTA UN SOLO OBJETO PERDIDO
 app.get('/objetoPerdido/:id', (req, res) => {
     const { id } = req.params;
-    ObjetoPerdido.findById(id).exec()
+    ObjetoPerdido.findById(id)
+        // .populate('autor.usuario')
+        .populate('comentario.usuario')
+        .exec()
         .then(lostObject => res.send(lostObject))
         .catch(error => res.send(error))
 });
@@ -62,6 +67,15 @@ app.get('/usuarioObjPerdidos/:id', (req, res) => {
     const { id } = req.params;
     Usuario.findById(id).exec()
         .then(usuario => res.send(usuario))
+        .catch(error => res.status(409).send(error))
+});
+
+//COMENTARIO DE OBJETO PERDIDO
+app.post('/comentar/objetoPerdido/:id', (req, res) => {
+    const {id} = req.params;
+    const {titulo, descripcion, estatus} = req.body;
+    ObjetoPerdido.findByIdAndUpdate(id, {$push: {comentario: [req.body]}}, {new: true}).exec()
+        .then(objetoPerdido => res.send(objetoPerdido))
         .catch(error => res.status(409).send(error))
 });
 

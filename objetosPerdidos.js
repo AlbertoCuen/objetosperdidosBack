@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 const moongose = require('mongoose');
 const URL_MONGO = 'mongodb://alberto:a123456@ds131954.mlab.com:31954/objetos_perdidos';
 
@@ -28,14 +30,7 @@ const ObjetoPerdidoSchema = new Schema({
         enum: [true, false],
         require: true
     },
-    autor: {
-        type: {
-            usuario: {
-                type: moongose.Schema.Types.ObjectId,
-                ref: 'Usuario'
-            }
-        },
-    },
+
     comentario: {
         type: [{
             usuario: {
