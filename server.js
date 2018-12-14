@@ -3,10 +3,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Usuario, ObjetoPerdido } = require('./objetosPerdidos');
+const cors = require('cors');
 
-const PORT = 3000;
+const PORT = 3002;
 const app = express();
 
+
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -29,8 +32,9 @@ app.post('/publicar/objetoPerdido', (req, res) => {
 
 // CONSULTAR TODOS LOS OBJETOS PERDIDOS
 app.get('/all/objetoPerdido', (req, res) => {
+    console.log(req.body);
     ObjetoPerdido.find().exec()
-        .then(lostObjects => { resobjetoPerdido.send(lostObjects) })
+        .then(lostObjects => { res.send(lostObjects) })
         .catch(error => { res.send(error) })
 });
 
@@ -72,9 +76,8 @@ app.get('/usuarioObjPerdidos/:id', (req, res) => {
 
 //COMENTARIO DE OBJETO PERDIDO
 app.post('/comentar/objetoPerdido/:id', (req, res) => {
-    const {id} = req.params;
-    const {titulo, descripcion, estatus} = req.body;
-    ObjetoPerdido.findByIdAndUpdate(id, {$push: {comentario: [req.body]}}, {new: true}).exec()
+    const { id } = req.params;
+    ObjetoPerdido.findByIdAndUpdate(id, { $push: { comentario: [req.body] } }, { new: true }).exec()
         .then(objetoPerdido => res.send(objetoPerdido))
         .catch(error => res.status(409).send(error))
 });
